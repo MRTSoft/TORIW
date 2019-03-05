@@ -17,7 +17,8 @@ public class Main {
         robots = new StringBuilder();
         TextPageContent = new StringBuilder();
         ArrayList<String> externalURLs = new ArrayList<String>();
-        dp.ParseDocumentFromFile("./data/java.html", "https://moz.com/", title, description, keywords, robots, externalURLs, TextPageContent);
+        dp.ParseDocumentFromFile("./data/java.html", "https://moz.com/", title, description, keywords,
+                robots, externalURLs, TextPageContent);
         System.out.println(title);
         System.out.println(description);
         System.out.println(keywords);
