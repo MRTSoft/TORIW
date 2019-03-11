@@ -127,15 +127,41 @@ public class DocParser {
         return (value != null);
     }
 
+    private static void  processWord(String word, Hashtable<String, Integer> stats){
+        if (word.isEmpty()) {
+            return;
+        }
+        Integer value = stats.get(word);
+
+        if (value != null) {
+            stats.put(word, value + 1);
+        } else {
+            //if it's an exception and not a stop word
+            if (IsExceptionWord(word)) {
+                //Keep the word
+                stats.put(word, 1);
+            } else {
+                if (IsStopWord(word)) {
+                    //Skip the word
+                }
+                else {
+                    //Dictionary word
+                    //Generate short form of the word
+                    //Keep the word
+                    stats.put(word, 1);
+                }
+            }
+        }
+    }
     public static  Hashtable<String, Integer> getWordsStatsFromString(String content){
         Hashtable<String, Integer> stats = new Hashtable<String, Integer>();
+        StringBuilder currentWord = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                             new ByteArrayInputStream(content.getBytes()),
                             Charset.forName("UTF-8")));
             int c;
-            StringBuilder currentWord = new StringBuilder();
             String separators = " ,.;':\"[] {}()-=+!@#$%^&*`~<>/?\\|\t\n\r";
             while ((c = reader.read()) != -1) {
                 char character = (char) c;
@@ -145,30 +171,7 @@ public class DocParser {
                 } else {
                     // Process the current word
                     String key = currentWord.toString();
-                    if (key.isEmpty()) {
-                        continue;
-                    }
-                    Integer value = stats.get(key);
-
-                    if (value != null) {
-                        stats.put(key, value + 1);
-                    } else {
-                        //if it's an exception and not a stop word
-                        if (IsExceptionWord(key)) {
-                            //Keep the word
-                            stats.put(key, 1);
-                        } else {
-                            if (IsStopWord(key)) {
-                                //Skip the word
-                            }
-                            else {
-                                //Dictionary word
-                                //Generate short form of the word
-                                //Keep the word
-                                stats.put(key, 1);
-                            }
-                        }
-                    }
+                    processWord(key, stats);
                     currentWord = new StringBuilder();
                 }
             }
@@ -177,6 +180,7 @@ public class DocParser {
             e.printStackTrace();
             System.out.println("Unable to open file");
         }
+        processWord(currentWord.toString(), stats);
         return stats;
     }
 

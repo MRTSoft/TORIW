@@ -15,6 +15,7 @@ public class Main {
             System.out.println("Created the index with success!");
             ig2.loadDirectIndexFromFolder("./data/text/index/");
             System.out.println("Loaded the index with success!");
+            ig2.generateReverseIndex();
         }
         catch (IOException ex){
             ex.printStackTrace();
@@ -25,6 +26,15 @@ public class Main {
             for(String subkey : ig2._index.get(key).keySet()){
                 System.out.println("\t"+subkey+": "+ig2._index.get(key).get(subkey));
             }
+        }
+        for(String word : ig2._reverseIndex.keySet()){
+            StringBuilder sb = new StringBuilder();
+            sb.append(word).append(" -->");
+            for(String doc : ig2._reverseIndex.get(word).keySet()){
+                sb.append(" ").append(doc);
+                sb.append(":").append(ig2._reverseIndex.get(word).get(doc).toString());
+            }
+            System.out.println(sb.toString());
         }
     }
 }

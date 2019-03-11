@@ -1,11 +1,13 @@
 package indexer;
 
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class IndexGenerator {
     public Hashtable<String, Hashtable<String, Integer>> _index;
+    public Hashtable<String, Hashtable<String, Integer>> _reverseIndex;
     public IndexGenerator(){
         _index = new Hashtable<>();
     }
@@ -45,6 +47,20 @@ public class IndexGenerator {
             map.put(key, entryFile.getAbsolutePath());
         }
         writeIndexFile(map, outDir + "map_direct.obj");
+    }
+
+    public void generateReverseIndex(){
+        _reverseIndex = new Hashtable<>();
+        for(String doc : _index.keySet()){
+            Hashtable<String, Integer> entry = _index.get(doc);
+            for(String word : entry.keySet()){
+                if (_reverseIndex.get(word) == null){
+                    Hashtable<String, Integer> newEntry = new Hashtable<>();
+                    _reverseIndex.put(word, newEntry);
+                }
+                _reverseIndex.get(word).put(doc, entry.get(word));
+            }
+        }
     }
 
     private Serializable deserializeObject(String src) throws IOException{
