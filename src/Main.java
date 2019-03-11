@@ -1,47 +1,30 @@
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Set;
-import indexer.DocParser;
+
+import indexer.IndexGenerator;
+
+import java.io.IOException;
 
 public class Main {
 
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        DocParser dp = new DocParser();
-        StringBuilder title, description, keywords, robots, TextPageContent;
-        title = new StringBuilder();
-        description = new StringBuilder();
-        keywords = new StringBuilder();
-        robots = new StringBuilder();
-        TextPageContent = new StringBuilder();
-        ArrayList<String> externalURLs = new ArrayList<String>();
-        dp.ParseDocumentFromFile("./data/java.html", "https://moz.com/", title, description, keywords,
-                robots, externalURLs, TextPageContent);
-        System.out.println(title);
-        System.out.println(description);
-        System.out.println(keywords);
-        System.out.println(robots);
-        for (String url : externalURLs) {
-            //System.out.print('\t');
-            //System.out.println(url);
-        }
-
-        //Write the page content to data/text/name-of-page.txt
+        IndexGenerator ig = new IndexGenerator();
+        IndexGenerator ig2 = new IndexGenerator();
+        ig.addDocument("./data/text/fox.html", "www.example.com");
+        ig.addDocument("./data/text/bat.html", "www.example.com");
         try {
-            PrintWriter out = new PrintWriter("./data/text/java.txt");
-            out.write(TextPageContent.toString());
-            out.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            ig.generateIndexFiles("./data/text/index/");
+            System.out.println("Created the index with success!");
+            ig2.loadDirectIndexFromFolder("./data/text/index/");
+            System.out.println("Loaded the index with success!");
+        }
+        catch (IOException ex){
+            ex.printStackTrace();
         }
 
-        Hashtable<String, Integer> v = DocParser.getWordsStatsForFile("./data/text/java.txt");
-        Set<String> keys = v.keySet();
-        for(String key : keys) {
-            System.out.println(String.format("%s : %s", key, v.get(key)));
+        for(String key : ig2._index.keySet()){
+            System.out.println(key);
+            for(String subkey : ig2._index.get(key).keySet()){
+                System.out.println("\t"+subkey+": "+ig2._index.get(key).get(subkey));
+            }
         }
-        System.out.println("Finished!");
     }
 }
