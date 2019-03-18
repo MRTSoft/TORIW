@@ -1,15 +1,19 @@
 
+import finder.SearchEngine;
+import finder.SearchResult;
 import indexer.DocParser;
 import indexer.IndexGenerator;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
 
     public static void main(String[] args) {
         DocParser parser = new DocParser();
         try {
-            parser.ParseFolder("data/text/index/", "data/text/site_dump/", true);
+            parser.ParseFolder("data/index/", "data/site_dump/", true);
         } catch (IOException ex) {
             ex.printStackTrace();
             return;
@@ -18,7 +22,7 @@ public class Main {
         IndexGenerator ig = new IndexGenerator();
 
         try {
-            ig.loadDirectIndexFromFolder("./data/text/index/");
+            ig.loadDirectIndexFromFolder("./data/index/");
             System.out.println("Loaded the index with success!");
             ig.generateReverseIndex();
         } catch (IOException ex) {
@@ -42,6 +46,22 @@ public class Main {
                 sb.append(":").append(ig._reverseIndex.get(word).get(doc).toString());
             }
             System.out.println(sb.toString());
+        }
+
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            System.out.print("Search: ");
+            String query = br.readLine();
+            SearchEngine goagal = new SearchEngine();
+            goagal.addIndexData(ig._reverseIndex);
+            SearchResult sRes = goagal.RunQuery(query);
+            for(String entry:sRes.result){
+                System.out.println("\t" + entry);
+            }
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 }

@@ -19,7 +19,6 @@ public class SearchResult {
     public SearchResult OrSearch(String term){
         HashSet<String> r1 = _engine.SearchTerm(term);
         HashSet<String> r2 = result;
-        result = null;
         if (r1.size() > r2.size()) {
             result = r1;
             r1 = r2;
