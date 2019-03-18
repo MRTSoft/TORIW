@@ -182,8 +182,9 @@ public class DocParser {
                 else {
                     //Dictionary word
                     //Generate short form of the word
+                    String key = word.toLowerCase();
                     //Keep the word
-                    stats.put(word, 1);
+                    stats.put(key, 1);
                 }
             }
         }
@@ -220,6 +221,7 @@ public class DocParser {
     }
 
     public static Hashtable<String, Integer> getWordsStatsForFile(String path) {
+        //TODO deprecate this function. Please be aware that this is not the same logic as getWordStatsFromString
         Hashtable<String, Integer> stats = new Hashtable<String, Integer>();
         try {
             BufferedReader reader = new BufferedReader(
@@ -237,7 +239,7 @@ public class DocParser {
                     currentWord.append(character);
                 } else {
                     // Process the current word
-                    String key = currentWord.toString();
+                    String key = currentWord.toString().toLowerCase();
                     if (key.isEmpty()) {
                         continue;
                     }
