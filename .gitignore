@@ -1,2 +1,4 @@
 .idea
-data/text/*
+data/*
+!data/STOPWORDS
+!data/EXCEPTIONS
