@@ -7,10 +7,46 @@ import org.jsoup.select.Elements;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Queue;
 
 public class DocParser {
+
+    /// Parse an entire folder and create the index
+    /// @param indexLocation Where to store the index of the parsed files
+    /// @param path Path of the folder that we want to parse
+    /// @param parseSubfolder setting this to true will enable recursive parsing
+    public void ParseFolder(String indexLocation, String path, Boolean parseSubfolders) throws IOException {
+        Queue<File> pQueue = new ArrayDeque<>();
+        IndexGenerator ig = new IndexGenerator();
+
+        // Enqueue all files in the folder (including files)
+        File inFolder = new File(path);
+        if (inFolder.isDirectory()){
+            for(File f : inFolder.listFiles()){
+                pQueue.add(f);
+            }
+        }
+
+        //Process queue
+        while (!pQueue.isEmpty()){
+            File f = pQueue.remove();
+            if (f.isDirectory() && parseSubfolders){
+                for(File sf:f.listFiles()){
+                    pQueue.add(sf);
+                }
+            }
+            if (f.isFile()){
+                //Parse the file
+                //TODO better mapping for file/urls
+                ig.addDocument(f.getAbsolutePath(), f.getName());
+            }
+        }
+        ig.generateIndexFiles(indexLocation);
+    }
+
     /// Extract from the specified file the following stuff
     public void ParseDocumentFromFile(String file, // in
                                       String absPath, // in
@@ -24,7 +60,6 @@ public class DocParser {
         Document doc = null;
         try {
             doc = Jsoup.parse(input, null, absPath);
-            // TODO 3rd attribute is the base URL for all links
         } catch (IOException e) {
             e.printStackTrace();
             return;

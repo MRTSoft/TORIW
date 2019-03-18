@@ -38,6 +38,7 @@ public class IndexGenerator {
 
     public void generateIndexFiles(String outDir) throws IOException{
         Integer i = 0;
+        //TODO Actually check that the folder exist and it's a valid path!
         Hashtable<String, String> map = new Hashtable<>();
         for(String key : _index.keySet()){
             i++;
