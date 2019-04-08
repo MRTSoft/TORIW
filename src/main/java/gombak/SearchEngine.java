@@ -9,19 +9,18 @@ import java.util.*;
 
 public class SearchEngine {
     private Hashtable<String, WordRecord> _reverseIndex;
-    private IndexData _index;
+    private MongoAdapter _adapter;
     public SearchEngine(){
-
-    }
-
-    public void addIndexData(IndexData index){
-        _index = index;
-        _reverseIndex = _index._reverseIndex;
+        try {
+            _adapter = new MongoAdapter();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     public HashSet<String> SearchTerm(String term){
-        //TODO Make this a simple Mongo query
-        HashSet<String> res = new HashSet<String>(_reverseIndex.get(term).documentList.keySet());
+        HashSet<String> res = _adapter.SearchTerm(term);
         return  res;
     }
 
@@ -115,7 +114,7 @@ public class SearchEngine {
         double[] qVector = new double[searchVectorComponents.size()];
 
         for(int i=0; i<qVector.length; ++i){
-            WordRecord term = _reverseIndex.get(qStringKeys[i]);
+            WordRecord term = _adapter.getReverseIndexEntry(qStringKeys[i]);
             if (term == null){
                 term = new WordRecord(qStringKeys[i]);
             }
@@ -127,7 +126,7 @@ public class SearchEngine {
         for(String document : result.result) {
             double[] documentVector = new double[qVector.length];
             for (int i = 0; i < documentVector.length; ++i) {
-                WordRecord term = _reverseIndex.get(qStringKeys[i]);
+                WordRecord term = _adapter.getReverseIndexEntry(qStringKeys[i]);
                 if (term == null) {
                     qVector[i] = 0.0;
                     continue;
@@ -137,7 +136,8 @@ public class SearchEngine {
                 if (occurences == null){
                     occurences = new Integer(0);
                 }
-                termFrequency = new Double(occurences) / new Double(_index.DocumentSize(document));//no or occ / size of document
+                Integer documentSize = _adapter.documentSize(document);
+                termFrequency = new Double(occurences) / new Double(documentSize);//no or occ / size of document
                 documentVector[i] = termFrequency * term.inverseDocumentFrequency;
             }
             Double score = DotProduct(qVector, documentVector);

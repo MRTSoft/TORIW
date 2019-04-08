@@ -8,13 +8,11 @@ import java.util.Queue;
 
 public class Engine {
     private IndexData _index;
-    private Parser _parser;
     private SearchEngine _search;
 
-    public Engine() {
+    public Engine() throws Exception{
         _index = new IndexData();
-        _parser = new Parser();
-        _search = null;
+        _search = new SearchEngine();
     }
 
 
@@ -50,7 +48,6 @@ public class Engine {
         }
         _index.generateReverseIndex();
         _search = new SearchEngine();
-        _search.addIndexData(_index);
     }
 
     //Parse a text file

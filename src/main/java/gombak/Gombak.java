@@ -7,10 +7,20 @@ public class Gombak {
     private static Properties _properties;
     public static void main(String [] args){
         //TODO menu and shit
-        Engine eng = new Engine();
         LoadConfig("data/gombak.conf");
+        Engine eng = null;
         try {
-            eng.ParseFolder("data/text", true);
+            MongoAdapter.Initialize(_properties);
+            eng = new Engine();
+        }
+        catch (Exception ex){
+            System.out.println("Error on loading MongoDB: ");
+            ex.printStackTrace();
+            return;
+        }
+        try {
+            String dataFolder = _properties.getProperty("app.data");
+            eng.ParseFolder(dataFolder, true);
             String query;
             System.out.println("Query something: ");
             BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
