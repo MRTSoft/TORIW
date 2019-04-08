@@ -1,15 +1,17 @@
-package finder;
+package gombak;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class SearchResult {
     public HashSet<String> result;
+    public Result[] SortedResults;
     private SearchEngine _engine;
 
     public SearchResult(SearchEngine engine){
         _engine = engine;
-        result = new HashSet<>();
+        result = new HashSet<String>();
+        SortedResults = null;
     }
     public SearchResult SearchTerm(String term){
         result = _engine.SearchTerm(term);
@@ -39,7 +41,7 @@ public class SearchResult {
             r1 = r2;
             r2 = aux;
         }
-        result = new HashSet<>();
+        result = new HashSet<String>();
         for(String doc : r1){
             if (r2.contains(doc)){
                 result.add(doc);
@@ -71,3 +73,4 @@ public class SearchResult {
         return this;
     }
 }
+

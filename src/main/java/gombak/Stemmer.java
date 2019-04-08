@@ -1,6 +1,4 @@
-package indexer;
-
-
+package gombak;
 /*
 
    Porter stemmer in Java. The original paper is in
@@ -426,4 +424,3 @@ class Stemmer
             }
     }
 }
-

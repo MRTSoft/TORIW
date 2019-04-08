@@ -1,6 +1,0 @@
-1. link-uri + robots
-2. titlu, desc keywords
-
-
-pt link-uri:
--> reconstruire URL absolut (fara fragmente!)
