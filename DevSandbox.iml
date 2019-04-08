@@ -9,5 +9,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="jsoup-1.11.3" level="project" />
+    <orderEntry type="library" name="mongodb-driver-async-3.10.1" level="project" />
+    <orderEntry type="library" name="mongodb-driver-async-3.10.1-javadoc" level="project" />
+    <orderEntry type="library" name="mongodb-driver-3.10.1" level="project" />
   </component>
 </module>

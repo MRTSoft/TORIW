@@ -13,7 +13,9 @@ public class IndexGenerator {
     }
 
     public void addDocument(String doc, String address){
-        //TODO add class for Document
+        /*
+        // Legacy HTML processing
+        // Add class for Document
         DocParser dp = new DocParser();
         StringBuilder title, description, keywords, robots, TextPageContent;
         title = new StringBuilder();
@@ -26,11 +28,20 @@ public class IndexGenerator {
         dp.ParseDocumentFromFile(doc, address, title, description, keywords,
                 robots, externalURLs, TextPageContent);
         Hashtable<String, Integer> words = DocParser.getWordsStatsFromString(TextPageContent.toString());
-        _index.put(doc, words);
+        */
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(doc)));
+            Hashtable<String, Integer> words = DocParser.getWordsStatsFromStream(reader);
+            _index.put(doc, words);
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
 
     private void writeIndexFile(Serializable index, String dstFile) throws IOException {
+        //TODO Use MongoDB if available
         ObjectOutputStream dst = new ObjectOutputStream(new FileOutputStream(dstFile));
         dst.writeObject(index);
         dst.close();
@@ -51,6 +62,7 @@ public class IndexGenerator {
     }
 
     public void generateReverseIndex(){
+        //TODO Make this parallel
         _reverseIndex = new Hashtable<>();
         for(String doc : _index.keySet()){
             Hashtable<String, Integer> entry = _index.get(doc);

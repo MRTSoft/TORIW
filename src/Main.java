@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         DocParser parser = new DocParser();
         try {
-            parser.ParseFolder("data/index/", "data/site_dump/", true);
+            parser.ParseFolder("data/index/", "data/text_data/", true);
         } catch (IOException ex) {
             ex.printStackTrace();
             return;

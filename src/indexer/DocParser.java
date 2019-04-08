@@ -182,35 +182,26 @@ public class DocParser {
                 else {
                     //Dictionary word
                     //Generate short form of the word
-                    String key = word.toLowerCase();
+                    Stemmer stm = new Stemmer();
+                    stm.add(word.toCharArray(), word.length());
+                    stm.stem();
+                    String key = stm.toString();
                     //Keep the word
                     stats.put(key, 1);
                 }
             }
         }
     }
+
     public static  Hashtable<String, Integer> getWordsStatsFromString(String content){
-        Hashtable<String, Integer> stats = new Hashtable<String, Integer>();
+        Hashtable<String, Integer> stats = null;
         StringBuilder currentWord = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                             new ByteArrayInputStream(content.getBytes()),
                             Charset.forName("UTF-8")));
-            int c;
-            String separators = " ,.;':\"[] {}()-=+!@#$%^&*`~<>/?\\|\t\n\r";
-            while ((c = reader.read()) != -1) {
-                char character = (char) c;
-                // Process the char
-                if (separators.indexOf(character) == -1) {
-                    currentWord.append(character);
-                } else {
-                    // Process the current word
-                    String key = currentWord.toString();
-                    processWord(key, stats);
-                    currentWord = new StringBuilder();
-                }
-            }
+            stats = getWordsStatsFromStream(reader);
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -220,58 +211,26 @@ public class DocParser {
         return stats;
     }
 
-    public static Hashtable<String, Integer> getWordsStatsForFile(String path) {
-        //TODO deprecate this function. Please be aware that this is not the same logic as getWordStatsFromString
+    public static Hashtable<String, Integer> getWordsStatsFromStream(BufferedReader reader) throws IOException {
         Hashtable<String, Integer> stats = new Hashtable<String, Integer>();
-        try {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            new FileInputStream(path),
-                            Charset.forName("UTF-8")));
+        StringBuilder currentWord = new StringBuilder();
+        int c;
+        String separators = " ,.;':\"[] {}()-=+!@#$%^&*`~<>/?\\|\t\n\r";
 
-            int c;
-            StringBuilder currentWord = new StringBuilder();
-            String separators = " ,.;':\"[] {}()-=+!@#$%^&*`~<>/?\\|\t\n\r";
-            while ((c = reader.read()) != -1) {
-                char character = (char) c;
-                // Process the char
-                if (separators.indexOf(character) == -1) {
-                    currentWord.append(character);
-                } else {
-                    // Process the current word
-                    String key = currentWord.toString().toLowerCase();
-                    if (key.isEmpty()) {
-                        continue;
-                    }
-                    Integer value = stats.get(key);
-
-                    if (value != null) {
-                        stats.put(key, value + 1);
-                    } else {
-                        //if it's an exception and not a stop word
-                        if (IsExceptionWord(key)) {
-                            //Keep the word
-                            stats.put(key, 1);
-                        } else {
-                            if (IsStopWord(key)) {
-                                //Skip the word
-                            }
-                            else {
-                                //Dictionary word
-                                //Generate short form of the word
-                                //Keep the word
-                                stats.put(key, 1);
-                            }
-                        }
-                    }
-                    currentWord = new StringBuilder();
-                }
+        while ((c = reader.read()) != -1) {
+            char character = (char) c;
+            // Process the char
+            if (separators.indexOf(character) == -1) {
+                currentWord.append(character);
+            } else {
+                // Process the current word
+                String key = currentWord.toString();
+                processWord(key, stats);
+                currentWord = new StringBuilder();
             }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Unable to open file");
         }
+        reader.close();
+        processWord(currentWord.toString(), stats);
         return stats;
     }
 }
