@@ -26,8 +26,18 @@
         <finalName>gombak</finalName>
         <resources>
             <resource>
+                <directory>src/main/java</directory>
+            </resource>
+            <resource>
+                <targetPath>${project.build.directory}/data</targetPath>
                 <directory>data</directory>
-                <filtering>true</filtering>
+                <includes>
+                    <include>EXCEPTIONS</include>
+                    <include>STOPWORDS</include>
+                    <include>gombak.conf</include>
+                    <include>**/*.html</include>
+                    <include>*.html</include>
+                </includes>
             </resource>
         </resources>
 

@@ -1,13 +1,14 @@
 package gombak;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.HashSet;
+import java.io.*;
+import java.util.Properties;
 
 public class Gombak {
+    private static Properties _properties;
     public static void main(String [] args){
         //TODO menu and shit
         Engine eng = new Engine();
+        LoadConfig("data/gombak.conf");
         try {
             eng.ParseFolder("data/text", true);
             String query;
@@ -24,6 +25,26 @@ public class Gombak {
         catch (Exception ex){
             ex.printStackTrace();
         }
-
     }
+
+    private static void LoadConfig(String configFile){
+        _properties = new Properties();
+        InputStream is = null;
+        try {
+            is = new FileInputStream(configFile);
+        } catch (FileNotFoundException ex) {
+            System.out.println("Config file not found!");
+            ex.printStackTrace();
+        }
+        try {
+            _properties.load(is);
+        } catch (IOException ex) {
+            System.out.println("Failed to load config file! (BAD format)");
+            ex.printStackTrace();
+        }
+        System.out.println("=====================================");
+        System.out.println(_properties.getProperty("app.name"));
+        System.out.println(_properties.getProperty("app.version"));
+    }
+
 }
