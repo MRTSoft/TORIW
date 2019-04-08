@@ -8,6 +8,16 @@ public class Gombak {
     public static void main(String [] args){
         //TODO menu and shit
         LoadConfig("data/gombak.conf");
+        if (_properties.containsKey("app.logs")){
+            try {
+                FileOutputStream stderr = new FileOutputStream(new File(_properties.getProperty("app.logs")));
+                PrintStream ps = new PrintStream(stderr);
+                System.setErr(ps);
+            }
+            catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
         Engine eng = null;
         try {
             MongoAdapter.Initialize(_properties);

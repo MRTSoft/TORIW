@@ -21,6 +21,7 @@ public class MongoAdapter {
 
     private MongoClient _client;
     private MongoDatabase _database;
+
     public MongoAdapter() throws Exception{
         if (_host == null){
             throw new Exception("Initialize() first!");
@@ -192,23 +193,14 @@ public class MongoAdapter {
         return new Double(collection.countDocuments());
     }
 
-    public ArrayList<String> getAllDocumentNames() {
-        ArrayList<String> result = new ArrayList<String>();
+    public MongoCursor<Document> getAllDocumentCursor(){
         MongoCollection collection = _database.getCollection("direct");
-        ArrayList<Document> docs = (ArrayList<Document>)collection.find().into(new ArrayList<Document>());
-        for(Document doc : docs){
-            result.add(doc.getString("document"));
-        }
-        return  result;
+        return collection.find().iterator();
     }
 
-    public ArrayList<String> getAllTermNames() {
-        ArrayList<String> result = new ArrayList<String>();
+
+    public MongoCursor<Document> getAllTermNames() {
         MongoCollection collection = _database.getCollection("inverse");
-        ArrayList<Document> docs = (ArrayList<Document>)collection.find().into(new ArrayList<Document>());
-        for(Document doc : docs){
-            result.add(doc.getString("term"));
-        }
-        return  result;
+        return collection.find().iterator();
     }
 }

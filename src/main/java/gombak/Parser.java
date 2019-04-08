@@ -135,6 +135,7 @@ public class Parser {
         if (word.isEmpty()) {
             return;
         }
+        word = word.toLowerCase();
         Integer value = stats.get(word);
 
         if (value != null) {
