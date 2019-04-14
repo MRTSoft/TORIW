@@ -3,11 +3,8 @@ package gombak;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 
-import javax.print.Doc;
-import java.io.*;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Queue;
 
 public class IndexData{
     //public Hashtable<String, Hashtable<String, Integer>> _index;
@@ -18,21 +15,20 @@ public class IndexData{
     }
 
 
-    public void generateReverseIndex(){
-        //TODO Make this parallel
-
-        MongoCursor<Document> cursor = _adapter.getAllDocumentCursor();
-        while (cursor.hasNext()){
-            Document cEntry = cursor.next();
-            List<Document> terms = (ArrayList<Document>)cEntry.get("terms");
-            for(Document term : terms){
-                _adapter.incrementReverseIndexEntry(term.getString("term"), cEntry.getString("document"));
+    public void generateReverseIndex(Queue<String> insertedDocuments){
+        //MongoCursor<Document> cursor = _adapter.getAllDocumentCursor();
+        //We should only get the new documents!
+        while (insertedDocuments.isEmpty() == false){
+            String docName = insertedDocuments.remove();
+            Hashtable<String, Integer> doc = _adapter.getDocument(docName);
+            for(String term : doc.keySet()){
+                _adapter.UpdateReverseIndexEntry(term, docName, doc.get(term));
             }
         }
-        cursor.close();
-        //Calculate df and idf
 
+        //Calculate idf
         //DocumentFreq
+        // We need to update this for the whole collection :(
         Double totalDocs = _adapter.getGrandTotalDocuments();
         MongoCursor<Document> allTerms = _adapter.getAllTermNames();
         while (allTerms.hasNext()) {
@@ -47,4 +43,8 @@ public class IndexData{
         _adapter.addDirectIndexEntry(key, entry);
     }
 
+    /// Clear all data in the index
+    public void clear(){
+        _adapter.ClearIndex();
+    }
 }

@@ -20,8 +20,9 @@ public class Engine {
     /// @param indexLocation Where to store the index of the parsed files
     /// @param path Path of the folder that we want to parse
     /// @param parseSubfolder setting this to true will enable recursive parsing
-    public void ParseFolder(String path, Boolean parseSubfolders) throws IOException {
+    public void ParseFolder(String path, Boolean parseSubfolders, Boolean isVerbose) throws IOException {
         Queue<File> pQueue = new LinkedList<File>();
+        Queue<String> processedDocuments = new LinkedList<>();
 
         // Enqueue all files in the folder (including files)
         File inFolder = new File(path);
@@ -32,7 +33,6 @@ public class Engine {
         } else {
             throw new FileNotFoundException("Not found " + inFolder.getAbsolutePath());
         }
-
         //Process queue
         while (!pQueue.isEmpty()) {
             File f = pQueue.remove();
@@ -43,10 +43,14 @@ public class Engine {
             }
             if (f.isFile()) {
                 //Parse the file
+                if (isVerbose)
+                    System.out.println("Parsing " + f.getAbsolutePath());
                 ParseDocument(f.getAbsolutePath());
+                processedDocuments.add(f.getAbsolutePath());
             }
         }
-        _index.generateReverseIndex();
+        System.out.println("Generating reverse index. Please wait...");
+        _index.generateReverseIndex(processedDocuments);
         _search = new SearchEngine();
     }
 
@@ -62,6 +66,7 @@ public class Engine {
         }
     }
 
+    /// Run a query against the index
     public Result[] Query(String query){
         if (_search == null){
             return new Result[0];
@@ -69,4 +74,8 @@ public class Engine {
         return _search.RunQuery(query).SortedResults;
     }
 
+    ///Clears the index
+    public void ClearIndex(){
+        _index.clear();
+    }
 }

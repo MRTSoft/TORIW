@@ -5,6 +5,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.internal.connection.CommandMessage;
 import org.bson.Document;
 import org.bson.*;
 
@@ -52,6 +53,8 @@ public class MongoAdapter {
         else {
             throw new Exception("No default collection!");
         }
+        MongoAdapter adapter = new MongoAdapter();
+        adapter._database.runCommand(new Document().append("ping", 1));
     }
 
     //Reverse document:
@@ -135,19 +138,14 @@ public class MongoAdapter {
         return result;
     }
 
-    public void incrementReverseIndexEntry(String term, String docName) {
+    public void UpdateReverseIndexEntry(String term, String docName, Integer count) {
         WordRecord oldRecord = getReverseIndexEntry(term);
         Boolean foundRecord = true;
         if (oldRecord == null){
             oldRecord = new WordRecord(term);
             foundRecord = false;
         }
-        if (oldRecord.documentList.containsKey(docName)){
-            oldRecord.documentList.put(docName, oldRecord.documentList.get(docName) + 1);
-        }
-        else {
-            oldRecord.documentList.put(docName, 1);
-        }
+        oldRecord.documentList.put(docName, count);
         //Construct the document
         Document newRecord = oldRecord.getBSONDocument();
 
@@ -202,5 +200,13 @@ public class MongoAdapter {
     public MongoCursor<Document> getAllTermNames() {
         MongoCollection collection = _database.getCollection("inverse");
         return collection.find().iterator();
+    }
+
+    ///Clear all data in the "direct" and "inverse" collections
+    public void ClearIndex(){
+        MongoCollection collection = _database.getCollection("inverse");
+        collection.deleteMany(new Document()); //Truncate the collection
+        collection = _database.getCollection("direct");
+        collection.deleteMany(new Document()); //Truncate the collection
     }
 }
