@@ -35,6 +35,7 @@ public final class LabelUtil {
      */
     public static String DeserializeLabel(byte[] data, int position){
         StringBuilder buffer = new StringBuilder();
+        //TODO
         return buffer.toString();
     }
 
@@ -44,11 +45,13 @@ public final class LabelUtil {
      * @return An offset in the package as defined by RFC1035
      */
     public static int GetPointerAddress(char pointer){
-        return 0;
+        int offset = 0;
+        offset = (((pointer>>8) & 0x3F) | (pointer &0xFF));
+        return offset;
     }
 
     /**
-     * Comodity function to check if the first byte of a
+     * Comodity function to check if a byte is a pointer or a label
      * @param b1
      * @return
      */

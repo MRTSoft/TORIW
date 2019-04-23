@@ -105,5 +105,4 @@ public class DNSHeader {
     public byte[] serializeContent(){
         return getHeader();
     }
-
 }
