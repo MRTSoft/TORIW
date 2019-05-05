@@ -1,7 +1,6 @@
-package DNSPackage;
+package mygalomorphae.dns.Package;
 
-
-import Utils.BitOperations;
+import mygalomorphae.dns.Utils.BitOperations;
 
 public class DNSHeader {
 
@@ -81,6 +80,7 @@ public class DNSHeader {
 
         byte[] header = new byte[HEADER_SIZE];
 
+        //TODO The offset is wrong!
         BitOperations.putChar(header, 0<<4, mID);
         BitOperations.putChar(header, 1<<4, mFlags);
         BitOperations.putChar(header, 2<<4, mQDCount);

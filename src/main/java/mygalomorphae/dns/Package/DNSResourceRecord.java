@@ -1,4 +1,4 @@
-package DNSPackage;
+package mygalomorphae.dns.Package;
 
 public class DNSResourceRecord {
 

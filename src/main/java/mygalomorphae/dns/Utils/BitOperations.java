@@ -1,4 +1,4 @@
-package Utils;
+package mygalomorphae.dns.Utils;
 
 public final class BitOperations {
     private BitOperations() {}
@@ -39,5 +39,24 @@ public final class BitOperations {
         }
         dst[offset] = ( byte )( ( value >>> 8 ) & 0x00FF );
         dst [offset + 1] = ( byte )( value & 0x00FF );
+    }
+
+    public static void printBytes(byte[] data){
+        int lines = data.length/12 + 1;
+        for(int l=0; l<lines; ++l){
+            //Print address
+            System.out.print(String.format("{0}: ", Integer.toHexString(l * 16)));
+            StringBuilder sb = new StringBuilder();
+            for(int c=0; c<16; ++c){
+                if (l*16+c < data.length){
+                    System.out.print(String.format("{0} ",Integer.toHexString(new Integer((int)data[l*16+c]))));
+                    sb.append((char)data[l*16+c]);
+                } else {
+                  System.out.print("00 ");
+                  sb.append(".");
+                }
+            }
+            System.out.println(sb.toString());
+        }
     }
 }

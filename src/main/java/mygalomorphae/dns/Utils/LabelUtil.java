@@ -1,4 +1,4 @@
-package Utils;
+package mygalomorphae.dns.Utils;
 
 public final class LabelUtil {
     private LabelUtil() {
@@ -15,14 +15,17 @@ public final class LabelUtil {
             if ( data.charAt( index ) == '.' ) {
                 result[lastIndex] = ( byte ) ( labelLength & 0xFF );
                 labelLength = 0;
-                lastIndex = index;
+                lastIndex = index + 1;
             } else {
                 labelLength++;
+                result[index+1] = (byte)data.charAt(index);
             }
             index++;
         }
+        //Add the last index
+        result[lastIndex] = ( byte ) ( labelLength & 0xFF );
         //Add the last 0
-        result[index] = 0x00;
+        result[index + 1] = 0x00;
         return result;
     }
 

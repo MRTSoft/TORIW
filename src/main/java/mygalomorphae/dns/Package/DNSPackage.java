@@ -1,4 +1,4 @@
-package DNSPackage;
+package mygalomorphae.dns.Package;
 
 import java.util.ArrayList;
 

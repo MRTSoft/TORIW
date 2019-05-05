@@ -1,4 +1,4 @@
-package DNSPackage;
+package mygalomorphae.dns.Package;
 
 public class DNSHeaderFlags {
     public static final char QR_QUERY               = 0 << 15;

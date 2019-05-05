@@ -1,6 +1,8 @@
-package DNSPackage;
+package mygalomorphae.dns.Package;
 
-import Utils.LabelUtil;
+
+import mygalomorphae.dns.Utils.BitOperations;
+import mygalomorphae.dns.Utils.LabelUtil;
 
 public class DNSQuestion {
     private byte[] mQName;
@@ -12,8 +14,8 @@ public class DNSQuestion {
         int size = mQName.length + 4;
         byte[] payload = new byte[size];
         System.arraycopy( mQName, 0, payload, 0, mQName.length );
-        Utils.BitOperations.putChar( payload, size - 4, mQType );
-        Utils.BitOperations.putChar( payload, size - 2, mQClass );
+        BitOperations.putChar( payload, size - 4, mQType );
+        BitOperations.putChar( payload, size - 2, mQClass );
 
         return payload;
     }
