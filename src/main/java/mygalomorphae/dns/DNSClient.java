@@ -55,7 +55,7 @@ public class DNSClient {
 
         try {
             //TODO caching for known adresses
-            DatagramSocket socket = new DatagramSocket(DNSPort, Inet4Address.getByAddress(LocalIP));
+            DatagramSocket socket = new DatagramSocket(9996, Inet4Address.getLocalHost());
             DatagramPacket requestPkg = new DatagramPacket(rawByte, rawByte.length, Inet4Address.getByAddress(DNSServerIP), DNSPort);
             socket.send(requestPkg);
             DatagramPacket response = new DatagramPacket(recvPackage, recvPackage.length);
@@ -75,6 +75,6 @@ public class DNSClient {
             se.printStackTrace();
             return null;
         }
-
+        return null;
     }
 }

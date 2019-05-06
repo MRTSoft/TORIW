@@ -17,7 +17,9 @@ public class SimpleHttpClient {
     public static void main(String argv[]) throws Exception {
         DNSClient dns = new DNSClient();
         SimpleHttpClient client = new SimpleHttpClient(dns);
-        String simpleOutput = client.simpleRequest(new URL("www.tuiasi.ro"));
+        String simpleOutput = client.simpleRequest(new URL("http://www.tuiasi.ro/"));
+        System.out.println( "==================================================" );
+        System.out.println( simpleOutput );
     }
 
     public SimpleHttpClient(DNSClient dns){
@@ -29,7 +31,7 @@ public class SimpleHttpClient {
     public String simpleRequest(URL path){
         String document = null;
 
-        HttpPackage request = HttpPackage.CreateGetRequest(path.getPath());
+        HttpPackage request = HttpPackage.CreateGetRequest(path);
 
         InetAddress addr = null;
         if (mDNS != null){
