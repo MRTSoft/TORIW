@@ -39,6 +39,42 @@ public class DNSClient {
             se.printStackTrace();
             return;
         }
+    }
+
+    public DNSClient(){
+
+    }
+
+    public InetAddress getAddressOf(String server){
+        DNSPackage request = DNSPackage.CreateSimpleQuery(server, true);
+        byte[] rawByte = request.serializeContent();
+        byte[] recvPackage = new byte[1024];
+        //System.out.println("==== Request ====");
+        //BitOperations.printBytes(rawByte);
+        //System.out.println("---- ------- ----");
+
+        try {
+            //TODO caching for known adresses
+            DatagramSocket socket = new DatagramSocket(DNSPort, Inet4Address.getByAddress(LocalIP));
+            DatagramPacket requestPkg = new DatagramPacket(rawByte, rawByte.length, Inet4Address.getByAddress(DNSServerIP), DNSPort);
+            socket.send(requestPkg);
+            DatagramPacket response = new DatagramPacket(recvPackage, recvPackage.length);
+            socket.receive(response);
+            System.out.println("==== Response ====");
+            //BitOperations.printBytes(recvPackage);
+            socket.close();
+            DNSPackage reply = new DNSPackage(recvPackage);
+            if (reply.IPv4Address != null){
+                BitOperations.PrintIpAddress(reply.IPv4Address);
+                System.out.println(String.format(" is the address of %s", reply.getQuery()));
+                return Inet4Address.getByAddress(reply.IPv4Address);
+            }
+        }
+        catch (Exception se){
+            System.err.println("Unable to resolve ip address of " + server);
+            se.printStackTrace();
+            return null;
+        }
 
     }
 }
