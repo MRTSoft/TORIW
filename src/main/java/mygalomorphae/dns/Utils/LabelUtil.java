@@ -36,9 +36,42 @@ public final class LabelUtil {
      * @return The decoded label
      *
      */
-    public static String DeserializeLabel(byte[] data, int position){
+    public static String DeserializeLabel(byte[] data, int position, int[] finishOffset){
         StringBuilder buffer = new StringBuilder();
-        //TODO
+        int offset = position;
+        boolean hasJump = false;
+        while (data[offset] != 0){
+            char pointer = (char)(((0xFF & data[offset]) << 8) | (0xFF & data[offset+1]));
+            if (IsPointer(data[offset])){
+                if (!hasJump){
+                    //Assume we only jump backwards
+                    finishOffset[0] = offset+2;
+                    hasJump = true;
+                }
+                offset = GetPointerAddress(pointer);
+                if (offset == finishOffset[0]){
+                    hasJump = false;
+                    //Not sure if I need this
+                }
+            }
+            else {
+                int len = data[offset] & 0xFF;
+                if (len == 0){
+                    break;
+                }
+                offset++;
+                if (!buffer.toString().isEmpty() && len > 0){
+                    buffer.append('.');
+                }
+                for(int i=0; i<len; ++i){
+                    buffer.append((char)(0x00FF & data[offset]));
+                    offset++;
+                }
+            }
+        }
+        if (!hasJump){
+            finishOffset[0] = offset+1;//Skip the null pointer at the end
+        }
         return buffer.toString();
     }
 

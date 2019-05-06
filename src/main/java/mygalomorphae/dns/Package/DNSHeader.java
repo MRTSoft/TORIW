@@ -30,6 +30,10 @@ public class DNSHeader {
         return mFlags;
     }
 
+    public boolean isError() {
+        return ((mFlags & 0x000F) != DNSHeaderFlags.RCODE_NO_ERROR);
+    }
+
     public void setFlags( char flags ) {
         this.mFlags = flags;
     }
@@ -73,33 +77,39 @@ public class DNSHeader {
         mANCount = 0;
         mNSCount = 0;
         mARCount = 0;
+    }
 
+    public DNSHeader(byte[] udpData){
+        // We extract the first 12 bytes from the array and set the header accordingly
+        mID = 0;
+        mFlags = DNSHeaderFlags.STANDARD_QUERY_REQUEST;
+        mQDCount = 0;
+        mANCount = 0;
+        mNSCount = 0;
+        mARCount = 0;
+        setHeader(udpData);
     }
 
     public byte[] getHeader() {
 
         byte[] header = new byte[HEADER_SIZE];
 
-        //TODO The offset is wrong!
-        BitOperations.putChar(header, 0<<4, mID);
-        BitOperations.putChar(header, 1<<4, mFlags);
-        BitOperations.putChar(header, 2<<4, mQDCount);
-        BitOperations.putChar(header, 3<<4, mANCount);
-        BitOperations.putChar(header, 4<<4, mNSCount);
-        BitOperations.putChar(header, 5<<4, mARCount);
+        BitOperations.put16Bits(header,  0, mID);
+        BitOperations.put16Bits(header,  2, mFlags);
+        BitOperations.put16Bits(header,  4, mQDCount);
+        BitOperations.put16Bits(header,  6, mANCount);
+        BitOperations.put16Bits(header,  8, mNSCount);
+        BitOperations.put16Bits(header, 10, mARCount);
         return  header;
     }
 
     public void setHeader(byte[] value) {
-
-        System.arraycopy( value, 0, value, 0, HEADER_SIZE );
-
-        mID      = BitOperations.extractShort( value, 0 << 1 );
-        mFlags   = BitOperations.extractShort( value, 1 << 1 );
-        mQDCount = BitOperations.extractShort( value, 2 << 1 );
-        mANCount = BitOperations.extractShort( value, 3 << 1 );
-        mNSCount = BitOperations.extractShort( value, 4 << 1 );
-        mARCount = BitOperations.extractShort( value, 5 << 1 );
+        mID      = BitOperations.extract16Bits( value, 0 );
+        mFlags   = BitOperations.extract16Bits( value, 2 );
+        mQDCount = BitOperations.extract16Bits( value, 4 );
+        mANCount = BitOperations.extract16Bits( value, 6 );
+        mNSCount = BitOperations.extract16Bits( value, 8 );
+        mARCount = BitOperations.extract16Bits( value, 10);
     }
 
     public byte[] serializeContent(){
