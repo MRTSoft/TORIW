@@ -1,0 +1,42 @@
+package mygalomorphae.prometheus;
+
+import java.util.Hashtable;
+
+public class HttpHeader {
+    public static String GET_TEMPLATE = "GET %s HTTP1.1";
+    public String StatusLine;
+    public String ResourcePath;
+    public Integer StatusCode;
+
+    public Hashtable<String, String> Headers;
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(StatusLine).append("\r\n");
+        for(String key : Headers.keySet()){
+            sb.append(String.format("%s: %s\r\n", key, Headers.get(key)));
+        }
+        sb.append("\r\n");
+        return sb.toString();
+    }
+
+    public HttpHeader(String path){
+        StatusLine = String.format(GET_TEMPLATE, path);
+        Headers = new Hashtable<>();
+        Headers.put("Host", "localhost:1996");
+        Headers.put("User-Agent", "robot");
+        Headers.put("Accept", "text/html,application/xhtml+xml,application/xml");
+        Headers.put("Connection", "keep-alive");
+    }
+
+    public HttpHeader(){
+        StatusLine = "";
+        Headers = new Hashtable<>();
+        ResourcePath = null;
+        StatusCode = null;
+    }
+
+    public void setStatusLIne(String statusLine) throws Exception {
+        StatusLine = statusLine;
+        StatusCode = Integer.parseInt(statusLine.split(" ")[1]);
+    }
+}

@@ -17,7 +17,7 @@ public class SimpleHttpClient {
     public static void main(String argv[]) throws Exception {
         DNSClient dns = new DNSClient();
         SimpleHttpClient client = new SimpleHttpClient(dns);
-        String simpleOutput = client.simpleRequest(new URL("http://www.tuiasi.ro/"));
+        String simpleOutput = client.simpleRequest(new URL("http://www.iana.org/domains/reserved"));
         System.out.println( "==================================================" );
         System.out.println( simpleOutput );
     }

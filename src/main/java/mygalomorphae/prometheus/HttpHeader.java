@@ -48,6 +48,7 @@ public class HttpHeader {
             HttpMethod = components[0];
             mResource = components[1];
         }
+        StatusLine = line;
     }
 
     public String toString() {

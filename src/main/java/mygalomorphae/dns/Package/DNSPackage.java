@@ -63,18 +63,20 @@ public class DNSPackage {
 
     private void processResponse(byte [] data) throws Exception{
         int rc = mHeader.getANCount();
-        mQuestion = new DNSQuestion(data, DNSHeader.HEADER_SIZE);
+        int offset = DNSHeader.HEADER_SIZE;
+        mQuestion = new DNSQuestion(data, offset);
+        offset = mQuestion.EndOffset;
         for(int replyIndex = 0; replyIndex < rc; replyIndex++) {
-            mAnswer = new DNSQuestion(data, mQuestion.EndOffset);
-            int offset = mAnswer.EndOffset;
+            mAnswer = new DNSQuestion(data, offset);
+            offset = mAnswer.EndOffset;
             TimeToLive = (BitOperations.extract16Bits(data, offset) << 16) | (BitOperations.extract16Bits(data, offset + 2));
             offset += 4;
+            int rdLen = BitOperations.extract16Bits(data, offset) & 0xFF;
+            offset += 2;
             if (mAnswer.isIpAddress()) {
                 //Get the first address we can find
-                int rdLen = BitOperations.extract16Bits(data, offset) & 0xFF;
                 if (rdLen == 4) {
                     //We have an IP address
-                    offset += 2;
                     IPv4Address = new byte[4];
                     for (int i = 0; i < 4; ++i) {
                         IPv4Address[i] = data[offset + i];
@@ -82,6 +84,10 @@ public class DNSPackage {
                 } else {
                     throw new Exception("Not an IP address!");
                 }
+                break;
+            }
+            else {
+                offset += rdLen;//Ignore this record
             }
         }
     }

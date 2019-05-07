@@ -24,7 +24,7 @@ public class HttpPackage {
             while (processingHeader) {
                 //Do stuff with the header
                 String line = dataStream.readLine();
-                if ( Objects.equals( line, "\r\n" ) ){
+                if ( line.trim().isEmpty() ){
                     //end of header
                     //Start reading the body
                     processingHeader = false;
