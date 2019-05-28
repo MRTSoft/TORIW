@@ -49,6 +49,10 @@ public class HttpPackage {
             ex.printStackTrace();
             reply.HasErrors = true;
         }
+
+        if (reply.Header.StatusCode < 200 || reply.Header.StatusCode > 299){
+            reply.HasErrors = true;
+        }
         return reply;
     }
 

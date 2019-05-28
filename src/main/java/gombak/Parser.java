@@ -17,7 +17,7 @@ public class Parser {
 
 
     /// Extract from the specified file the following stuff
-    public void ParseDocumentFromFile(String file, // in
+    public static void ParseDocumentFromFile(String file, // in
                                       String absPath, // in
                                       StringBuilder title, // out
                                       StringBuilder description, // out
@@ -64,7 +64,7 @@ public class Parser {
         TextPageContent.append(doc.select("body").first().text());
     }
 
-    private String ParseUrl(Element url) {
+    private static String ParseUrl(Element url) {
         StringBuilder content = new StringBuilder();
         String absHref = url.attr("abs:href");
         if (url.hasAttr("href")) {
