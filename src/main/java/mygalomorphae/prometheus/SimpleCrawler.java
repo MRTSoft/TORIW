@@ -297,6 +297,7 @@ public class SimpleCrawler {
             startingPoints.add( new URL(_properties.getProperty("crawler.starting_point")) );
             File wd = new File(new File(output_folder_path).getCanonicalPath());
             REPFilter.UserAgent = _properties.getProperty("crawler.rep_agent");
+            HttpHeader.UserAgent = _properties.getProperty("crawler.agent");
             if ( !wd.exists() ){
                 wd.mkdirs();
             }

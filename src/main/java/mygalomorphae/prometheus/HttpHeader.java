@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public class HttpHeader {
     public static String GET_FORMAT = "GET %s HTTP/1.1";
+    public static String UserAgent = "robot";//The actual user agent sent to the site
 
     public Hashtable<String, String> Headers;
     public boolean HasErrors = false;
@@ -25,7 +26,7 @@ public class HttpHeader {
 
     public HttpHeader( URL path ) throws Exception {
         Headers = new Hashtable<>(  );
-        Headers.put( "user-agent" , "robot" );
+        Headers.put( "user-agent" , UserAgent );
         Headers.put( "content-length", "0" );
         Headers.put( "accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" );
         Headers.put( "host", path.getHost() );
