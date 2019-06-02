@@ -1,6 +1,5 @@
 package mygalomorphae.prometheus;
 
-import com.sun.deploy.util.StringUtils;
 
 public class REPRule {
     public enum RRType {

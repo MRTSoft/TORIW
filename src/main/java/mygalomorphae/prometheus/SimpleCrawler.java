@@ -5,6 +5,7 @@ import mygalomorphae.dns.DNSClient;
 
 import java.io.*;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -125,6 +126,9 @@ public class SimpleCrawler {
                 //TODO handle redirect
             }
         }
+        if (content == null){
+            return;
+        }
         PrintStream writer = new PrintStream(new FileOutputStream(dst) );
         writer.write(content.getBytes());
         writer.close();
@@ -167,11 +171,11 @@ public class SimpleCrawler {
         if (canFollow) {
             for (String nLink : externalURLs) {
                 URL extractedLink = new URL(nLink);
-                if (Objects.equals(extractedLink.getHost(), link.getHost())) { //Only process links from the same domain
+                //if (Objects.equals(extractedLink.getHost(), link.getHost())) { //Only process links from the same domain
                     if ((!URLInQueue(extractedLink)) && (!URLVisited(extractedLink))) {
                         mQueue.add(new URL(addIndexFile(nLink)));
                     }
-                }
+                //}
             }
         }
         if (!canIndex){
@@ -232,6 +236,10 @@ public class SimpleCrawler {
             mClient = new SimpleHttpClient(new DNSClient());
         }
         long timer = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss");
+        Date startDate = new Date(timer);
+        System.out.println(sdf.format(startDate));
+        System.out.println();
         long elapsedMilliseconds = 0;
         long processedLinks = 0;
 
@@ -248,8 +256,9 @@ public class SimpleCrawler {
                 System.err.println("Error on getting " + cLink.toString());
                 ex.printStackTrace();
             }
-            elapsedMilliseconds += (timer - System.currentTimeMillis());
-            timer = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+            elapsedMilliseconds += (now - timer);
+            timer = now;
             processedLinks++;
             System.out.println("Processed " + cLink.toString());
         }
@@ -257,33 +266,83 @@ public class SimpleCrawler {
         if (mQueue.isEmpty()){
             System.out.println("Queue is empty");
         }
-        if (mTimeLimitSeconds < elapsedMilliseconds/1000) {
+        if (mTimeLimitSeconds < (elapsedMilliseconds/1000)) {
             System.out.println("Time limit expired");
         }
         if (mLinkLimit < processedLinks){
             System.out.println("Link count exceeded");
         }
+        System.out.println(sdf.format(timer));
+        System.out.println(String.format("Processed %d links in %f seconds", processedLinks, elapsedMilliseconds/1000.0));
     }
 
     public static void main (String [] args){
+        LoadConfig("./data/gombak.conf");
+        if (_properties.containsKey("app.logs")){
+            try {
+                FileOutputStream stderr = new FileOutputStream(new File(_properties.getProperty("app.logs")));
+                PrintStream ps = new PrintStream(stderr);
+                System.setErr(ps);
+                System.setOut(ps);
+            }
+            catch (IOException ex){
+                ex.printStackTrace();
+            }
+        }
         try {
             LinkedList<URL> startingPoints = new LinkedList<>();
-            startingPoints.add( new URL("http://riweb.tibeica.com/crawl/") );
-            File wd = new File(new File("./crawler_data").getCanonicalPath());
-            REPFilter.UserAgent = "RIWEB_CRAWLER";
+            String output_folder_path = _properties.getProperty("crawler.output");
+            if (output_folder_path == null)
+                output_folder_path = "./crawler_data";
+            startingPoints.add( new URL(_properties.getProperty("crawler.starting_point")) );
+            File wd = new File(new File(output_folder_path).getCanonicalPath());
+            REPFilter.UserAgent = _properties.getProperty("crawler.rep_agent");
             if ( !wd.exists() ){
                 wd.mkdirs();
             }
             if (wd.isDirectory() == false){
                 throw new Exception("Bad path!");
             }
-            SimpleCrawler crawler = new SimpleCrawler(wd, startingPoints, null, null );
+            Integer maxLinks = null;
+            Integer maxSeconds = null;
+
+            try {
+                maxLinks = Integer.parseInt(_properties.getProperty("crawler.max_links"));
+                maxSeconds = Integer.parseInt(_properties.getProperty("crawler.max_seconds"));
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+
+            SimpleCrawler crawler = new SimpleCrawler(wd, startingPoints, maxLinks, maxSeconds );
             crawler.start();
         }
         catch (Exception ex){
             ex.printStackTrace();
             return;
         }
+    }
+
+    private static Properties _properties;
+
+    private static void LoadConfig(String configFile){
+        _properties = new Properties();
+        InputStream is = null;
+        try {
+            is = new FileInputStream(configFile);
+        } catch (FileNotFoundException ex) {
+            System.out.println("Config file not found!");
+            ex.printStackTrace();
+        }
+        try {
+            _properties.load(is);
+        } catch (IOException ex) {
+            System.out.println("Failed to load config file! (BAD format)");
+            ex.printStackTrace();
+        }
+        //System.out.println("=====================================");
+        //System.out.println(_properties.getProperty("app.name"));
+        //System.out.println(_properties.getProperty("app.version"));
     }
 
 }

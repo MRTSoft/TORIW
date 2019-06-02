@@ -1,10 +1,7 @@
 package mygalomorphae.prometheus;
 
-import com.sun.jndi.dns.DnsClient;
 import mygalomorphae.dns.DNSClient;
-import mygalomorphae.dns.Utils.LabelUtil;
 
-import javax.imageio.IIOException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -69,7 +66,9 @@ public class SimpleHttpClient {
             }
         }
         try {
+            //TODO set timeout before this line
             Socket httpSocket = new Socket(addr, link.getPort() == -1 ? HTTP_DEFAULT_PORT : link.getPort());
+            httpSocket.setSoTimeout(1000);
             DataOutputStream outToServer = new DataOutputStream(httpSocket.getOutputStream());
             outToServer.write(request.toString().getBytes());
             BufferedReader inFromServer = new BufferedReader(new InputStreamReader(httpSocket.getInputStream()));

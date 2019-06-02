@@ -73,6 +73,7 @@ public class DNSClient {
         try {
             //TODO caching for known adresses
             DatagramSocket socket = new DatagramSocket(9996, Inet4Address.getByAddress(LocalIP));
+            socket.setSoTimeout(1000);
             DatagramPacket requestPkg = new DatagramPacket(rawByte, rawByte.length, Inet4Address.getByAddress(DNSServerIP), DNSPort);
             socket.send(requestPkg);
             DatagramPacket response = new DatagramPacket(recvPackage, recvPackage.length);
